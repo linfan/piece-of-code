@@ -1,0 +1,21 @@
+mybatis:
+  config-locations: classpath:mybatis/mybatis-config.xml
+  mapper-locations: classpath:mybatis/mapper/*.xml
+  type-aliases-package: com.flin.code.sender.entity
+
+spring:
+  # MQ
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: demo
+    password: password
+  # DB
+  datasource:
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/demo_db1?useUnicode=true&characterEncoding=utf-8&useSSL=false
+    username: demo
+    password: password
+
+server:
+  port: 5000

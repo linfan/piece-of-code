@@ -1,0 +1,18 @@
+CREATE DATABASE demo_db1;
+USE demo_db1;
+DROP TABLE IF EXISTS `account`;
+CREATE TABLE `account` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT '主键id',
+  `userName` VARCHAR(32) COMMENT '用户名',
+  `accountBalance` DECIMAL(30,2) DEFAULT 0 COMMENT '账户余额',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8;
+DROP TABLE IF EXISTS `transaction`;
+CREATE TABLE `transaction` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT '主键id',
+  `userId` BIGINT(20) COMMENT '用户ID',
+  `amount` DECIMAL(30,2) DEFAULT 0 COMMENT '转账金额',
+  `timestamp` TIMESTAMP COMMENT '交易时间',
+  `status` VARCHAR(15) COMMENT '交易状态',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8;
