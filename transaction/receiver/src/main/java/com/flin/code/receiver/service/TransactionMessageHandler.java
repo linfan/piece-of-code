@@ -5,17 +5,18 @@ import com.flin.code.receiver.config.RabbitConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 
-@Service
 @Slf4j
-public class TransactionMessageListener {
+@Service
+public class TransactionMessageHandler {
 
     @Autowired
     private TransactionRecordService transactionRecordService;
 
     @RabbitListener(queues = RabbitConfig.TR_BEGIN_QUEUE)
-    public void receiveActionMessage(final TransactionBeginMessage message) {
+    public void receiveActionMessage(@Payload TransactionBeginMessage message) {
         log.info("Received message as transaction action: {}", message.toString());
 
         try {
