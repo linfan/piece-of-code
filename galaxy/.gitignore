@@ -1,0 +1,30 @@
+# output files
+bin/*
+main
+test_main
+
+# object files
+src/obj/*
+unittest/obj/*
+*.o
+
+# generated files
+cscope.*
+tags
+core.*
+*.bk
+*.swp
+*.xml
+
+# gtest framwork
+unittest/lib/*
+unittest/include/*
+
+# CDT project file
+.project
+.cproject
+.settings/
+
+# CodeLite project file
+*.project
+*.workspace

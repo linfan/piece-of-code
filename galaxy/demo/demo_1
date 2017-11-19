@@ -1,0 +1,14 @@
+#!/bin/bash
+make build -C .. > /dev/null 2>&1
+if [ ${?} != 0 ]; then
+    echo "Source code compile failed !"
+    exit
+fi
+
+INPUT_FILE="./input1.txt"
+echo "====== READ INPUT FROM ${INPUT_FILE} ======"
+cat ${INPUT_FILE}
+
+echo "====== APPLICATION OUTPUT ======"
+../bin/main ${INPUT_FILE}
+echo "====== DONE ======"
