@@ -1,0 +1,6 @@
+# Visual C++
+*.dsw
+*.ncb
+*.plg
+*.dsp
+*.opt
