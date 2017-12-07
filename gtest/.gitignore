@@ -1,0 +1,16 @@
+# CDT project file
+.project
+.cproject
+.settings/
+
+# Codelite project file
+.codelite/
+Debug/
+*.project
+*.workspace
+
+# Generated or framework folder
+include/
+lib/
+obj/
+bin/
