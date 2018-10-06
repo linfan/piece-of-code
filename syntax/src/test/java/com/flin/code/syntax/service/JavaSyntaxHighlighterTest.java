@@ -89,10 +89,10 @@ public class JavaSyntaxHighlighterTest {
 
     @Test
     public void should_able_to_handle_slash_in_quote() {
-        String codeStr = "\"\\n \\t \\\\ \\\" \\'\" '\\\\' '\\'' '\\\\' end";
-        String highlightedStr = "<ol><li><div class=\"double-quote-style\">\"\\n \\t \\\\ \\\" \\'\"</div> "
+        String codeStr = "\"\\n \\t \\\\ ' \\\" \\\\\\\" \\\\\" '\\\\' '\\'' '\"' end";
+        String highlightedStr = "<ol><li><div class=\"double-quote-style\">\"\\n \\t \\\\ ' \\\" \\\\\\\" \\\\\"</div> "
             + "<div class=\"single-quote-style\">'\\\\'</div> <div class=\"single-quote-style\">'\\''</div> "
-            + "<div class=\"single-quote-style\">'\\\\'</div> end</li></ol>";
+            + "<div class=\"single-quote-style\">'\"'</div> end</li></ol>";
         assertEquals(highlightedStr, highlighter.beautify(codeStr));
     }
 

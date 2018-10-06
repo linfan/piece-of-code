@@ -13,26 +13,38 @@ import java.util.List;
 public class JavaSyntaxHighlighter {
 
     private HtmlTextBuffer buf;
-    private boolean doubleEscape;
-    private boolean inAssignment;
     private SyntaxState state;
-    private int braceLevel;
-    private int parenthesisLevel;
     private List<String> fields;
     private List<String> methods;
     private String fmCandidate;
 
-    public String beautify(String code) {
+    /**
+     * 当前位置的"/"是真正的反斜杠(而不是转译符)
+     */
+    private boolean isRealSlash;
+    /**
+     * 当前位置是在变量或字段的赋值内容里
+     */
+    private boolean isAssignment;
+    /**
+     * 当前位置的小括号层级
+     */
+    private int parenthesisLevel;
+    /**
+     * 当前位置的大括号层级
+     */
+    private int braceLevel;
 
+    public String beautify(String code) {
         buf = new HtmlTextBuffer();
-        doubleEscape = false;
-        inAssignment = false;
         state = SyntaxState.STATE_TEXT;
-        braceLevel = 0;
-        parenthesisLevel = 0;
         fields = Lists.newArrayList();
         methods = Lists.newArrayList();
         fmCandidate = "";
+        isRealSlash = false;
+        isAssignment = false;
+        parenthesisLevel = 0;
+        braceLevel = 0;
         long totalSize = code.length();
         int identifierLength = 0;
         char previousChar, currentChar, nextChar;
@@ -92,8 +104,8 @@ public class JavaSyntaxHighlighter {
                 break;
             case '\\':
                 buf.putChar('\\');
-                if (isQuoteInQuote(previousChar, nextChar)) {
-                    doubleEscape = true;
+                if (state == SyntaxState.STATE_SINGLE_QUOTE || state == SyntaxState.STATE_DOUBLE_QUOTE) {
+                    isRealSlash = !isRealSlash && (previousChar == '\\');
                 }
                 break;
             case '\"':
@@ -104,7 +116,6 @@ public class JavaSyntaxHighlighter {
                 } else if (isEndOfDoubleQuote(previousChar)) {
                     state = SyntaxState.STATE_TEXT;
                     buf.putDivClassRightPart();
-                    doubleEscape = false;
                 }
                 break;
             case '\'':
@@ -115,7 +126,6 @@ public class JavaSyntaxHighlighter {
                 } else if (isEndOfSingleQuote(previousChar)) {
                     state = SyntaxState.STATE_TEXT;
                     buf.putDivClassRightPart();
-                    doubleEscape = false;
                 }
                 break;
             case '{':
@@ -150,7 +160,7 @@ public class JavaSyntaxHighlighter {
             case '(':
                 buf.putChar('(');
                 if (!isRawTextSyntaxStatus()) {
-                    if (!fmCandidate.isEmpty() && isInClassButOutOfMethod() && notMethodParameters() && !inAssignment) {
+                    if (!fmCandidate.isEmpty() && isInClassButOutOfMethod() && notMethodParameters() && !isAssignment) {
                         methods.add(fmCandidate);
                         fmCandidate = "";
                     }
@@ -167,11 +177,11 @@ public class JavaSyntaxHighlighter {
             case ',':
                 buf.putChar(currentChar);
                 if (!isRawTextSyntaxStatus()) {
-                    if (!fmCandidate.isEmpty() && isInClassButOutOfMethod() && notMethodParameters() && !inAssignment) {
+                    if (!fmCandidate.isEmpty() && isInClassButOutOfMethod() && notMethodParameters() && !isAssignment) {
                         fields.add(fmCandidate);
                         fmCandidate = "";
                     }
-                    inAssignment = false;
+                    isAssignment = false;
                 }
                 break;
             case '=':
@@ -181,7 +191,7 @@ public class JavaSyntaxHighlighter {
                         fields.add(fmCandidate);
                         fmCandidate = "";
                     }
-                    inAssignment = true;
+                    isAssignment = true;
                 }
                 break;
             case '\n':
@@ -253,17 +263,11 @@ public class JavaSyntaxHighlighter {
     }
 
     private boolean isEndOfSingleQuote(char previousChar) {
-        return state == SyntaxState.STATE_SINGLE_QUOTE && (previousChar != '\\' || doubleEscape);
+        return state == SyntaxState.STATE_SINGLE_QUOTE && (previousChar != '\\' || isRealSlash);
     }
 
     private boolean isEndOfDoubleQuote(char previousChar) {
-        return state == SyntaxState.STATE_DOUBLE_QUOTE && (previousChar != '\\' || doubleEscape);
-    }
-
-    private boolean isQuoteInQuote(char previousChar, char nextChar) {
-        return previousChar == '\\' &&
-            ((state == SyntaxState.STATE_DOUBLE_QUOTE && nextChar == '\"')
-                || (state == SyntaxState.STATE_SINGLE_QUOTE && nextChar == '\''));
+        return state == SyntaxState.STATE_DOUBLE_QUOTE && (previousChar != '\\' || isRealSlash);
     }
 
     private boolean reachDigitalEdge(int identifierLength, char currentChar, char nextChar) {
