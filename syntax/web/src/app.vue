@@ -36,8 +36,20 @@
 .single-line-comment-style {
     color: yellowgreen;
 }
+.annotation-style {
+    color: brown;
+}
+.field-style {
+    color: purple;
+    font-weight: bold;
+}
+.method-style {
+    color: orange;
+    font-weight: bold;
+}
 #code-area ol {
     font-family: "Consolas" , "Courier New" , Courier, mono, serif;
+    font-size: 23px;
 }
 #code-area li div {
     display: inline;

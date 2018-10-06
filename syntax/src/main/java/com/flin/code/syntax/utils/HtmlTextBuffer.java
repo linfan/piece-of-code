@@ -60,4 +60,9 @@ public class HtmlTextBuffer {
     public String getHtml() {
         return buf.toString();
     }
+
+    public static String withStyle(String text, String style) {
+        return String.format("<div class=\"%s\">%s</div>", style, text);
+    }
+
 }

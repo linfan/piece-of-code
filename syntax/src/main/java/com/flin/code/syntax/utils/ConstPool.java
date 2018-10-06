@@ -6,7 +6,9 @@ import java.util.Set;
 
 public class ConstPool {
 
-    // 样式名称
+    /**
+     * 样式名称
+     */
     public static final String SINGLE_LINE_COMMENT_STYLE = "single-line-comment-style";
     public static final String MULTI_LINE_COMMENT_STYLE = "multi-line-comment-style";
     public static final String SINGLE_QUOTE_STYLE = "single-quote-style";
@@ -17,19 +19,27 @@ public class ConstPool {
     public static final String CONSTANT_STYLE = "constant-style";
     public static final String NON_PRIMITIVE_TYPE_STYLE = "non-primitive-type-style";
     public static final String DIGITAL_STYLE = "digital-style";
+    public static final String ANNOTATION_STYLE = "annotation-style";
+    public static final String CLASS_FIELD_STYLE = "field-style";
+    public static final String CLASS_METHOD_STYLE = "method-style";
 
-    // 字面常量
+    /**
+     * 字面常量
+     */
     public static final Set<String> LITERALS = ImmutableSet.of("null", "true", "false");
-    // 关键词
-    public static final Set<String> KEYWORDS = ImmutableSet.of("abstract", "break", "case",
-            "catch", "class", "const", "continue", "default", "do", "else",
-            "extends", "final", "finally", "for", "goto", "if", "implements", "import",
-            "instanceof", "interface", "native", "new", "package", "private",
-            "protected", "public", "return", "static", "strictfp", "super",
-            "switch", "synchronized", "this", "throw", "throws", "transient",
-            "try", "volatile", "while");
-    // 原始数据类型
-    public static final Set<String> PRIMITIVE_TYPES = ImmutableSet.of("boolean", "char", "byte",
-            "short", "int", "long", "float", "double", "void");
+
+    /**
+     * 关键词
+     */
+    public static final Set<String> KEYWORDS = ImmutableSet.of("abstract", "break", "case", "catch", "class", "const",
+        "continue", "default", "do", "else", "extends", "final", "finally", "for", "goto", "if", "implements", "import",
+        "instanceof", "interface", "native", "new", "package", "private", "protected", "public", "return", "static",
+        "strictfp", "super", "switch", "synchronized", "this", "throw", "throws", "transient", "try", "volatile", "while");
+
+    /**
+     * 原始数据类型
+     */
+    public static final Set<String> PRIMITIVE_TYPES = ImmutableSet.of("boolean", "char", "byte", "short", "int", "long",
+        "float", "double", "void");
 
 }
