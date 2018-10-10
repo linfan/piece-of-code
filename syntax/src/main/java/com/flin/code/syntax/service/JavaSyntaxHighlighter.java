@@ -17,7 +17,10 @@ public class JavaSyntaxHighlighter {
     private List<String> fields;
     private List<String> methods;
     private String fmCandidate;
-
+    /**
+     * 当前扫描的行列位置，仅用于调试
+     */
+    private int row, column;
     /**
      * 当前位置的"/"是真正的反斜杠(而不是转译符)
      */
@@ -36,15 +39,7 @@ public class JavaSyntaxHighlighter {
     private int braceLevel;
 
     public String beautify(String code) {
-        buf = new HtmlTextBuffer();
-        state = SyntaxState.STATE_TEXT;
-        fields = Lists.newArrayList();
-        methods = Lists.newArrayList();
-        fmCandidate = "";
-        isRealSlash = false;
-        isAssignment = false;
-        parenthesisLevel = 0;
-        braceLevel = 0;
+        resetScanStatus();
         long totalSize = code.length();
         int identifierLength = 0;
         char previousChar, currentChar, nextChar;
@@ -54,6 +49,7 @@ public class JavaSyntaxHighlighter {
             previousChar = (i > 0) ? code.charAt(i - 1) : 0;
             currentChar = (i < totalSize) ? code.charAt(i) : 0;
             nextChar = (i < totalSize - 1) ? code.charAt(i + 1) : 0;
+            column++;
 
             // 单独处理数字文本
             if (reachDigitalEdge(identifierLength, currentChar, nextChar)) {
@@ -62,7 +58,7 @@ public class JavaSyntaxHighlighter {
             // 移动到标识符边界
             if (notYetReachIdentifierEdge(currentChar)) {
                 buf.putChar(currentChar);
-                ++identifierLength;
+                identifierLength++;
                 continue;
             }
             // 标识符高亮
@@ -78,14 +74,6 @@ public class JavaSyntaxHighlighter {
         buf.endCodeBlock();
 
         return highlightFieldsAndMethods(buf.getHtml());
-    }
-
-    private String highlightFieldsAndMethods(String html) {
-        html = fields.stream().reduce(html, (text, field) ->
-            text.replaceAll("\\b" + field + "\\b", HtmlTextBuffer.withStyle(field, ConstPool.CLASS_FIELD_STYLE)));
-        html = methods.stream().reduce(removeDivInDiv(html), (text, method) ->
-            text.replaceAll("\\b" + method + "\\b", HtmlTextBuffer.withStyle(method, ConstPool.CLASS_METHOD_STYLE)));
-        return removeDivInDiv(html);
     }
 
     private void handleSpecialCharacter(char previousChar, char currentChar, char nextChar, boolean isNotHeadChar) {
@@ -179,8 +167,8 @@ public class JavaSyntaxHighlighter {
                 if (!isRawTextSyntaxStatus()) {
                     if (!fmCandidate.isEmpty() && isInClassButOutOfMethod() && notMethodParameters() && !isAssignment) {
                         fields.add(fmCandidate);
-                        fmCandidate = "";
                     }
+                    fmCandidate = "";
                     isAssignment = false;
                 }
                 break;
@@ -204,6 +192,8 @@ public class JavaSyntaxHighlighter {
                 } else {
                     buf.newLine();
                 }
+                row++;
+                column = 1;
                 break;
             case '\r':
             case 0:
@@ -228,7 +218,7 @@ public class JavaSyntaxHighlighter {
                     buf.putDivClass(identifierLength, ConstPool.NON_PRIMITIVE_TYPE_STYLE);
                 } else if (identifier.charAt(0) == '@') {
                     buf.putDivClass(identifierLength, ConstPool.ANNOTATION_STYLE);
-                } else if (isInClassButOutOfMethod() && isLegalVariableName(identifier)) {
+                } else if (isInClassButOutOfMethod() && notMethodParameters() && isLegalVariableName(identifier)) {
                     fmCandidate = identifier;
                 }
             }
@@ -240,6 +230,28 @@ public class JavaSyntaxHighlighter {
             }
         }
         return state;
+    }
+
+    private void resetScanStatus() {
+        buf = new HtmlTextBuffer();
+        state = SyntaxState.STATE_TEXT;
+        fields = Lists.newArrayList();
+        methods = Lists.newArrayList();
+        fmCandidate = "";
+        isRealSlash = false;
+        isAssignment = false;
+        parenthesisLevel = 0;
+        braceLevel = 0;
+        row = 1;
+        column = 1;
+    }
+
+    private String highlightFieldsAndMethods(String html) {
+        html = fields.stream().reduce(html, (text, field) ->
+            text.replaceAll("\\b" + field + "\\b", HtmlTextBuffer.withStyle(field, ConstPool.CLASS_FIELD_STYLE)));
+        html = methods.stream().reduce(removeDivInDiv(html), (text, method) ->
+            text.replaceAll("\\b" + method + "\\b", HtmlTextBuffer.withStyle(method, ConstPool.CLASS_METHOD_STYLE)));
+        return removeDivInDiv(html);
     }
 
     private String removeDivInDiv(String html) {
